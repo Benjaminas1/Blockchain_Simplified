@@ -5,6 +5,8 @@
 #include <vector>
 #include <random>
 #include <chrono>
+#include <fstream>
+#include <iomanip>
 
 using namespace std;
 
@@ -25,6 +27,7 @@ class transactionClass{
 
 class blockClass{
     public:
+        string blockHash;
         string prev_block_hash;
         time_t timestamp;
         string version;
@@ -47,4 +50,6 @@ vector<userClass> generateUsers(int quantity);
 
 vector<transactionClass> generateTransactions(int quantity, vector<userClass> user);
 
-blockClass generateBlock(vector<transactionClass> &transactions, int nonce);
+blockClass generateBlock(vector<transactionClass> &transactions, int nonce, blockchainClass blockchain, int difficulty);
+
+void printBlockchainInfo(blockchainClass blockchain);

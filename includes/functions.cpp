@@ -130,6 +130,7 @@ vector<transactionClass> generateTransactions(int quantity, vector<userClass> us
 
 void putTransactionsToBlock(vector<transactionClass> &transactions, blockClass &block){
     for(int i=0; i<100; i++){
+        if(transactions.size() == 0) break;
         int transactionID = generateRandomNumber(0,transactions.size() - 1);
         block.transactions.push_back(transactions[transactionID]);
         transactions.erase(transactions.begin() + transactionID);
@@ -144,14 +145,36 @@ string getMerkleRoot(vector<transactionClass> transactions){
     return finalHash;
 }
 
-blockClass generateBlock(vector<transactionClass> &transactions, int nonce){
+blockClass generateBlock(vector<transactionClass> &transactions, int nonce, blockchainClass blockchain, int difficulty){
     blockClass block;
     putTransactionsToBlock(transactions, block);
     block.nonce = nonce;
     block.timestamp = time(0);
     block.version = "v0.1";
     block.merkle_root_hash = getMerkleRoot(block.transactions);
+    block.difficulty_target = difficulty;
+
+    block.blockHash = hashString(to_string(nonce));
+    if(blockchain.blocks.size() == 0) block.prev_block_hash = "none";
+    else block.prev_block_hash = blockchain.blocks.back().blockHash;
 
     return block;
 }
 
+void printBlockchainInfo(blockchainClass blockchain){
+    ofstream out;
+    out.open("blockchainResult.txt");
+
+    for(int i=0; i<blockchain.blocks.size(); i++){
+        cout << "-----------------------------------------------" << endl;
+        cout << "Block " << i << " info:" << endl;
+        cout << setw(30) << "Hash: " << blockchain.blocks[i].blockHash << endl;
+        cout << setw(30) << "Timestamp: " << blockchain.blocks[i].timestamp << endl;
+        cout << setw(30) << "Number of transactions: " << blockchain.blocks[i].transactions.size() << endl;
+        cout << setw(30) << "Difficulty: " << blockchain.blocks[i].difficulty_target << endl;
+        cout << setw(30) << "Merkle root: " << blockchain.blocks[i].merkle_root_hash << endl;
+        cout << setw(30) << "Nonce: " << blockchain.blocks[i].nonce << endl;
+        cout << setw(30) << "Version: " << blockchain.blocks[i].version << endl;
+
+    }
+}

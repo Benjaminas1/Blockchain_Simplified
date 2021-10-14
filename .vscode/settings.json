@@ -3,6 +3,9 @@
         "xstring": "cpp",
         "random": "cpp",
         "vector": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "iostream": "cpp",
+        "ostream": "cpp",
+        "chrono": "cpp"
     }
 }
