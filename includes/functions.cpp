@@ -95,11 +95,11 @@ int generateRandomNumber(int min, int max){
     return distribution(generator);
 }
 
-vector<userStruct> generateUsers(int quantity){
-    vector<userStruct> users;
+vector<userClass> generateUsers(int quantity){
+    vector<userClass> users;
 
     for(int i=0; i<quantity; i++){
-        userStruct newUser;
+        userClass newUser;
         newUser.name = "Name" + to_string(i);
         newUser.public_key = hashString(newUser.name);
         newUser.balance = generateRandomNumber(100,1000000);
@@ -110,11 +110,11 @@ vector<userStruct> generateUsers(int quantity){
     return users;
 }
 
-vector<transactionStruct> generateTransactions(int quantity, vector<userStruct> user){
-    vector<transactionStruct> transactions;
+vector<transactionClass> generateTransactions(int quantity, vector<userClass> user){
+    vector<transactionClass> transactions;
 
     for(int i=0; i<quantity; i++){
-        transactionStruct newTransaction;
+        transactionClass newTransaction;
 
         newTransaction.transaction_ID_hash = hashString("transaction_id_" + to_string(i));
         int sender_id = generateRandomNumber(0,999);
@@ -128,6 +128,30 @@ vector<transactionStruct> generateTransactions(int quantity, vector<userStruct> 
     return transactions;
 }
 
-void putTransactionsToBlock(vector<transactionStruct> transactions){
-
+void putTransactionsToBlock(vector<transactionClass> &transactions, blockClass &block){
+    for(int i=0; i<100; i++){
+        int transactionID = generateRandomNumber(0,transactions.size() - 1);
+        block.transactions.push_back(transactions[transactionID]);
+        transactions.erase(transactions.begin() + transactionID);
+    }
 }
+
+string getMerkleRoot(vector<transactionClass> transactions){
+    string finalHash = "";
+    for(auto transaction : transactions){
+        finalHash = hashString(finalHash + transaction.transaction_ID_hash);
+    }
+    return finalHash;
+}
+
+blockClass generateBlock(vector<transactionClass> &transactions, int nonce){
+    blockClass block;
+    putTransactionsToBlock(transactions, block);
+    block.nonce = nonce;
+    block.timestamp = time(0);
+    block.version = "v0.1";
+    block.merkle_root_hash = getMerkleRoot(block.transactions);
+
+    return block;
+}
+

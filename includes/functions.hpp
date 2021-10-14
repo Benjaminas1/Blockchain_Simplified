@@ -8,33 +8,43 @@
 
 using namespace std;
 
-struct userStruct{
-    string name;
-    string public_key;
-    int balance;
+class userClass{
+    public:
+        string name;
+        string public_key;
+        int balance;
 };
 
-struct transactionStruct{
-    string transaction_ID_hash;
-    string sender_public_key;
-    string receiver_public_key;
-    int amount;
+class transactionClass{
+    public:
+        string transaction_ID_hash;
+        string sender_public_key;
+        string receiver_public_key;
+        int amount;
 };
 
-struct blockStruct{
-    string prev_block_hash;
-    time_t timestamp;
-    string version;
-    string merkel_root_hash;
-    int nonce;
-    int difficulty_arget;
-    vector<transactionStruct> transactions;
+class blockClass{
+    public:
+        string prev_block_hash;
+        time_t timestamp;
+        string version;
+        string merkle_root_hash;
+        unsigned int nonce;
+        int difficulty_target;
+        vector<transactionClass> transactions;
+};
+
+class blockchainClass{
+    public:
+        vector<blockClass> blocks;
 };
 
 string hashString(string inputStr);
 
-vector<userStruct> generateUsers(int quantity);
+int generateRandomNumber(int min, int max);
 
-vector<transactionStruct> generateTransactions(int quantity, vector<userStruct> user);
+vector<userClass> generateUsers(int quantity);
 
-void putTransactionsToBlock(vector<transactionStruct> transactions);
+vector<transactionClass> generateTransactions(int quantity, vector<userClass> user);
+
+blockClass generateBlock(vector<transactionClass> &transactions, int nonce);
