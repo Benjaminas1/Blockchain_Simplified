@@ -165,11 +165,14 @@ void printBlockchainInfo(blockchainClass blockchain){
     ofstream out;
     out.open("blockchainResult.txt");
 
+
     for(int i=0; i<blockchain.blocks.size(); i++){
+        char buff[20];
+        strftime(buff, 20, "%Y-%m-%d %H:%M:%S", localtime(&blockchain.blocks[i].timestamp));
         cout << "-----------------------------------------------" << endl;
         cout << "Block " << i << " info:" << endl;
         cout << setw(30) << "Hash: " << blockchain.blocks[i].blockHash << endl;
-        cout << setw(30) << "Timestamp: " << blockchain.blocks[i].timestamp << endl;
+        cout << setw(30) << "Timestamp: " << buff << endl;
         cout << setw(30) << "Number of transactions: " << blockchain.blocks[i].transactions.size() << endl;
         cout << setw(30) << "Difficulty: " << blockchain.blocks[i].difficulty_target << endl;
         cout << setw(30) << "Merkle root: " << blockchain.blocks[i].merkle_root_hash << endl;
