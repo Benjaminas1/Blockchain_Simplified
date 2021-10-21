@@ -3,20 +3,28 @@
 # Užduotis
 
 1. Sugeneruoti ~1000 tinklo vartotojų, kurie turėtų bent tris atributus:
+
 - vardą
 - viešąjį hash raktą
 - valiutos atsitiktinį balansą
+
 2. Sugeneruoti ~10000 naujų transakcijų pool'ą, kurios turėtų šiuos atributus:
+
 - transakcijos ID (kitų transakcijos laukų hash'as)
 - siuntėjas (viešasis raktas)
 - gavėjas (viešasis raktas)
 - suma
+
 3. Iš transakcijų pool'o atsitiktinai pasirinkti 100-ą transakcijų, kurias bandysime įdėti į naują bloką.
+
 4. Realizuokite naujų blokų kasimo (angl. mining) Proof-of-Work (PoW) tipo procesą, kurio tikslas yra surasti naujam blokui hash'ą, tenkinantį `Difficulty Target` reikalavimą, t.y., hash'o pradžioje esančių nulių tam tikrą skaičių.
+
 5. Suradus tokį naujo bloko hash'ą:
+
 - į naują bloką priskirtas transakcijas ištrinkite iš transakcijų pool'o;
 - "įvykdykite" transakcijas, t.y., atnaujinkite tinklo vartotojų balansus;
 - naują bloką pridėkite prie blockchain grandinės.
+
 6. Kartoti 3-5 žingsnius tol, kol yra laisvų transakcijų.
 
 # Veikimas
