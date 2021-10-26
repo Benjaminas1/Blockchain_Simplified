@@ -138,11 +138,32 @@ void putTransactionsToBlock(vector<transactionClass> &transactions, blockClass &
 }
 
 string getMerkleRoot(vector<transactionClass> transactions){
-    string finalHash = "";
-    for(auto transaction : transactions){
-        finalHash = hashString(finalHash + transaction.transaction_ID_hash);
+    // string finalHash = "";
+    // for(auto transaction : transactions){
+    //     finalHash = hashString(finalHash + transaction.transaction_ID_hash);
+    // }
+    
+
+    vector<string> currentLayer;
+
+    for(auto transaction : transactions){    
+        currentLayer.push_back(transaction.transaction_ID_hash);
     }
-    return finalHash;
+
+    while(currentLayer.size() > 1) {
+        vector<string> tempLayer;
+        // Fixing uneven node size
+        if(currentLayer.size() % 2 != 0) currentLayer.push_back(currentLayer.back());
+
+        for(int i=0; i<currentLayer.size(); i += 2){
+            string combinedHash = hashString(currentLayer[i] + currentLayer[i + 1]);
+            tempLayer.push_back(combinedHash);
+        }
+
+        currentLayer = tempLayer;
+    }
+    
+    return currentLayer[0];
 }
 
 blockClass generateBlock(vector<transactionClass> &transactions, int nonce, blockchainClass blockchain, int difficulty){
@@ -180,4 +201,8 @@ void printBlockchainInfo(blockchainClass blockchain){
         cout << setw(30) << "Version: " << blockchain.blocks[i].version << endl;
 
     }
+}
+
+void get_data_from_user(){
+    
 }
