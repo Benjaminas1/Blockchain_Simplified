@@ -138,12 +138,6 @@ void putTransactionsToBlock(vector<transactionClass> &transactions, blockClass &
 }
 
 string getMerkleRoot(vector<transactionClass> transactions){
-    // string finalHash = "";
-    // for(auto transaction : transactions){
-    //     finalHash = hashString(finalHash + transaction.transaction_ID_hash);
-    // }
-    
-
     vector<string> currentLayer;
 
     for(auto transaction : transactions){    
