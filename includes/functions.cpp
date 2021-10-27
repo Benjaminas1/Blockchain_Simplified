@@ -116,11 +116,12 @@ vector<transactionClass> generateTransactions(int quantity, vector<userClass> us
     for(int i=0; i<quantity; i++){
         transactionClass newTransaction;
 
-        newTransaction.transaction_ID_hash = hashString("transaction_id_" + to_string(i));
-        int sender_id = generateRandomNumber(0,999);
+        int sender_id = generateRandomNumber(0,user.size()-1);
         newTransaction.sender_public_key = user[sender_id].public_key;
-        newTransaction.receiver_public_key = user[generateRandomNumber(0,999)].public_key;
-        newTransaction.amount = user[sender_id].balance / 10;
+        newTransaction.receiver_public_key = user[generateRandomNumber(0,user.size()-1)].public_key;
+        newTransaction.amount = generateRandomNumber(10,100000);
+        string transactionInfo = newTransaction.sender_public_key + newTransaction.receiver_public_key + to_string(newTransaction.amount);
+        newTransaction.transaction_ID_hash = hashString(transactionInfo);
 
         transactions.push_back(newTransaction);
     }
@@ -128,11 +129,34 @@ vector<transactionClass> generateTransactions(int quantity, vector<userClass> us
     return transactions;
 }
 
-void putTransactionsToBlock(vector<transactionClass> &transactions, blockClass &block){
-    for(int i=0; i<100; i++){
+int find_user_index_by_key(string publicKey, vector<userClass> users) {
+    int i = 0;
+    for(auto user : users){
+        if(user.public_key == publicKey) return i;
+        i++;
+    }
+    return -1;
+}
+
+void putTransactionsToBlock(vector<transactionClass> &transactions, blockClass &block, vector<userClass> &users){
+    for(int i=0; i < block.max_transaction_number; i++){
         if(transactions.size() == 0) break;
         int transactionID = generateRandomNumber(0,transactions.size() - 1);
-        block.transactions.push_back(transactions[transactionID]);
+
+        int senderIndex =  find_user_index_by_key(transactions[transactionID].sender_public_key, users);
+        int receiverIndex =  find_user_index_by_key(transactions[transactionID].receiver_public_key, users);
+        bool transactionIsValid = (senderIndex != -1 && receiverIndex != -1 && transactions[transactionID].amount <= users[senderIndex].balance && transactions[transactionID].amount >= 0) ? true : false;
+        
+        string transactionInfo = transactions[transactionID].sender_public_key + transactions[transactionID].receiver_public_key + to_string(transactions[transactionID].amount);
+        bool transactionInfoUnchanged = (transactions[transactionID].transaction_ID_hash == hashString(transactionInfo)) ? true : false;
+
+        if(transactionIsValid && transactionInfoUnchanged){
+            int amount = transactions[transactionID].amount;
+            block.transactions.push_back(transactions[transactionID]);
+            users[senderIndex].balance -= amount;
+            users[receiverIndex].balance += amount;
+        }  
+
         transactions.erase(transactions.begin() + transactionID);
     }
 }
@@ -160,9 +184,9 @@ string getMerkleRoot(vector<transactionClass> transactions){
     return currentLayer[0];
 }
 
-blockClass generateBlock(vector<transactionClass> &transactions, int nonce, blockchainClass blockchain, int difficulty){
+blockClass generateBlock(vector<transactionClass> &transactions, int nonce, blockchainClass blockchain, int difficulty, vector<userClass> &users){
     blockClass block;
-    putTransactionsToBlock(transactions, block);
+    putTransactionsToBlock(transactions, block, users);
     block.nonce = nonce;
     block.timestamp = time(0);
     block.version = "v0.1";

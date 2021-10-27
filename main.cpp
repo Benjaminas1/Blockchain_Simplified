@@ -4,7 +4,7 @@ using namespace std;
 
 int main(){
     int difficultyTarget = 3;
-    vector<userClass> users = generateUsers(1000);
+    vector<userClass> users = generateUsers(500);
     vector<transactionClass> transactions = generateTransactions(1000, users);
 
     blockchainClass blockchain;
@@ -24,7 +24,7 @@ int main(){
             }
 
             if(zerosFound == difficultyTarget){
-                blockchain.blocks.push_back(generateBlock(transactions, number, blockchain, difficultyTarget));
+                blockchain.blocks.push_back(generateBlock(transactions, number, blockchain, difficultyTarget, users));
                 break;
             }
         }

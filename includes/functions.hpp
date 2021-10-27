@@ -35,6 +35,7 @@ class blockClass{
         unsigned int nonce;
         int difficulty_target;
         vector<transactionClass> transactions;
+        const int max_transaction_number = 100;
 };
 
 class blockchainClass{
@@ -50,6 +51,6 @@ vector<userClass> generateUsers(int quantity);
 
 vector<transactionClass> generateTransactions(int quantity, vector<userClass> user);
 
-blockClass generateBlock(vector<transactionClass> &transactions, int nonce, blockchainClass blockchain, int difficulty);
+blockClass generateBlock(vector<transactionClass> &transactions, int nonce, blockchainClass blockchain, int difficulty, vector<userClass> &users);
 
 void printBlockchainInfo(blockchainClass blockchain);
