@@ -87,12 +87,13 @@ string hashString(string inputStr){
     return hashToString(hashed);
 }
 
+std::random_device dev;
 int generateRandomNumber(int min, int max){
-    std::random_device device;
-    std::mt19937 generator(device());
-    std::uniform_int_distribution<int> distribution(min,max);
+    
+    std::mt19937 rng(dev());
+    std::uniform_int_distribution<std::mt19937::result_type> dist6(min,max); // distribution in range [1, 6]
 
-    return distribution(generator);
+    return dist6(rng);
 }
 
 vector<userClass> generateUsers(int quantity){
@@ -138,12 +139,6 @@ void putTransactionsToBlock(vector<transactionClass> &transactions, blockClass &
 }
 
 string getMerkleRoot(vector<transactionClass> transactions){
-    // string finalHash = "";
-    // for(auto transaction : transactions){
-    //     finalHash = hashString(finalHash + transaction.transaction_ID_hash);
-    // }
-    
-
     vector<string> currentLayer;
 
     for(auto transaction : transactions){    
@@ -182,27 +177,6 @@ blockClass generateBlock(vector<transactionClass> &transactions, int nonce, bloc
     return block;
 }
 
-void printBlockchainInfo(blockchainClass blockchain){
-    ofstream out;
-    out.open("blockchainResult.txt");
-
-
-    for(int i=0; i<blockchain.blocks.size(); i++){
-        char buff[20];
-        strftime(buff, 20, "%Y-%m-%d %H:%M:%S", localtime(&blockchain.blocks[i].timestamp));
-        cout << "-----------------------------------------------" << endl;
-        cout << "Block " << i << " info:" << endl;
-        cout << setw(30) << "Hash: " << blockchain.blocks[i].blockHash << endl;
-        cout << setw(30) << "Timestamp: " << buff << endl;
-        cout << setw(30) << "Number of transactions: " << blockchain.blocks[i].transactions.size() << endl;
-        cout << setw(30) << "Difficulty: " << blockchain.blocks[i].difficulty_target << endl;
-        cout << setw(30) << "Merkle root: " << blockchain.blocks[i].merkle_root_hash << endl;
-        cout << setw(30) << "Nonce: " << blockchain.blocks[i].nonce << endl;
-        cout << setw(30) << "Version: " << blockchain.blocks[i].version << endl;
-
-    }
-}
-
-void get_data_from_user(){
+void blockMining(){
     
 }

@@ -51,5 +51,3 @@ vector<userClass> generateUsers(int quantity);
 vector<transactionClass> generateTransactions(int quantity, vector<userClass> user);
 
 blockClass generateBlock(vector<transactionClass> &transactions, int nonce, blockchainClass blockchain, int difficulty);
-
-void printBlockchainInfo(blockchainClass blockchain);
