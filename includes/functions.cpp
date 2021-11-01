@@ -87,8 +87,8 @@ string hashString(string inputStr){
     return hashToString(hashed);
 }
 
+std::random_device device;
 int generateRandomNumber(int min, int max){
-    std::random_device device;
     std::mt19937 generator(device());
     std::uniform_int_distribution<int> distribution(min,max);
 
