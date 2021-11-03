@@ -7,6 +7,7 @@
 #include <chrono>
 #include <fstream>
 #include <iomanip>
+#include <algorithm>
 
 using namespace std;
 
@@ -27,13 +28,13 @@ class transactionClass{
 
 class blockClass{
     public:
-        string blockHash;
-        string prev_block_hash;
-        time_t timestamp;
-        string version;
-        string merkle_root_hash;
-        unsigned int nonce;
-        int difficulty_target;
+        string prev_block_hash = "";
+        string hash = "";
+        time_t timestamp = 0;
+        string version = "";
+        string merkle_root_hash = "";
+        unsigned int nonce = 0;
+        int difficulty_target = 0;
         vector<transactionClass> transactions;
         const int max_transaction_number = 100;
 };
@@ -51,4 +52,6 @@ vector<userClass> generateUsers(int quantity);
 
 vector<transactionClass> generateTransactions(int quantity, vector<userClass> user);
 
-blockClass generateBlock(vector<transactionClass> &transactions, int nonce, blockchainClass blockchain, int difficulty, vector<userClass> &users);
+blockClass addBlockToBlockchain(vector<transactionClass> &transactions, int nonce, blockchainClass blockchain, int difficulty, vector<userClass> &users);
+
+void block_mining(vector<transactionClass> &transactions, blockchainClass &blockchain, vector<userClass> &users, int difficultyTarget);

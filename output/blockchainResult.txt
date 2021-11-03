@@ -1,0 +1,8 @@
+-----------------------------------------------
+Block 0 info:
+                   Timestamp: 2021-11-03 21:30:38
+      Number of transactions: 100
+                  Difficulty: 0
+                 Merkle root: 45d286e4303c7c363a1936c035e3d32621a06364eebf3d4ea6313579f814d23f
+                       Nonce: 1495923606
+                     Version: v0.1
