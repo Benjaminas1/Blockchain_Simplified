@@ -1,11 +1,11 @@
 #include "functions.hpp"
 #include "hash.hpp"
 
-std::random_device device;
+std::random_device rd;
 int generateRandomNumber(int min, int max)
 {
 
-    std::mt19937 generator(device());
+    std::mt19937 generator(rd());
     std::uniform_int_distribution<int> distribution(min, max);
 
     return distribution(generator);
@@ -156,6 +156,7 @@ void block_mining(vector<transactionClass> &transactions, blockchainClass &block
 {
     int potentialBlocksCount = 5;
     vector<blockClass> potentialBlocks;
+    vector<int> randomBlockIndex = {0, 1, 2, 3, 4};
 
     for (int i = 0; i < potentialBlocksCount; i++)
     {
@@ -164,8 +165,13 @@ void block_mining(vector<transactionClass> &transactions, blockchainClass &block
 
     while (true)
     {
-        for (int blockIndex = 0; blockIndex < potentialBlocksCount; blockIndex++)
+        // Shuffling randomBlockIndex
+        auto rng = default_random_engine{rd()};
+        shuffle(randomBlockIndex.begin(), randomBlockIndex.end(), rng);
+
+        for (int i = 0; i < potentialBlocksCount; i++)
         {
+            int blockIndex = randomBlockIndex[i];
             for (int tryNr = 0; tryNr < 4000; tryNr++)
             {
                 unsigned int number = generateRandomNumber(0, INT_MAX);
