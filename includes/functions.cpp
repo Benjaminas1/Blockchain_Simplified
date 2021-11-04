@@ -114,7 +114,7 @@ string hashString(string inputStr)
 std::random_device device;
 int generateRandomNumber(int min, int max)
 {
-    
+
     std::mt19937 generator(device());
     std::uniform_int_distribution<int> distribution(min, max);
 
@@ -127,10 +127,11 @@ vector<userClass> generateUsers(int quantity)
 
     for (int i = 0; i < quantity; i++)
     {
-        userClass newUser;
-        newUser.name = "Name" + to_string(i);
-        newUser.public_key = hashString(newUser.name);
-        newUser.balance = generateRandomNumber(100, 1000000);
+        string name = "Name" + to_string(i);
+        userClass newUser(
+            name,
+            hashString(name),
+            generateRandomNumber(100, 1000000));
 
         users.push_back(newUser);
     }
@@ -147,8 +148,8 @@ vector<transactionClass> generateTransactions(int quantity, vector<userClass> us
         transactionClass newTransaction;
 
         int sender_id = generateRandomNumber(0, user.size() - 1);
-        newTransaction.sender_public_key = user[sender_id].public_key;
-        newTransaction.receiver_public_key = user[generateRandomNumber(0, user.size() - 1)].public_key;
+        newTransaction.sender_public_key = user[sender_id].getPublicKey();
+        newTransaction.receiver_public_key = user[generateRandomNumber(0, user.size() - 1)].getPublicKey();
         newTransaction.amount = generateRandomNumber(1000, 100000);
         string transactionInfo = newTransaction.sender_public_key + newTransaction.receiver_public_key + to_string(newTransaction.amount);
         newTransaction.transaction_ID_hash = hashString(transactionInfo);
@@ -164,7 +165,7 @@ int find_user_index_by_key(string publicKey, vector<userClass> users)
     int i = 0;
     for (auto user : users)
     {
-        if (user.public_key == publicKey)
+        if (user.getPublicKey() == publicKey)
             return i;
         i++;
     }
@@ -198,7 +199,7 @@ void validateTransactions(vector<transactionClass> &transactions, blockClass blo
     {
         int senderIndex = find_user_index_by_key(block.transactions[i].sender_public_key, users);
         int receiverIndex = find_user_index_by_key(block.transactions[i].receiver_public_key, users);
-        bool transactionIsValid = (senderIndex != -1 && receiverIndex != -1 && block.transactions[i].amount <= users[senderIndex].balance && block.transactions[i].amount >= 0) ? true : false;
+        bool transactionIsValid = (senderIndex != -1 && receiverIndex != -1 && block.transactions[i].amount <= users[senderIndex].getBalance() && block.transactions[i].amount >= 0) ? true : false;
 
         string transactionInfo = block.transactions[i].sender_public_key + block.transactions[i].receiver_public_key + to_string(block.transactions[i].amount);
         bool transactionInfoUnchanged = (block.transactions[i].transaction_ID_hash == hashString(transactionInfo)) ? true : false;
@@ -206,8 +207,10 @@ void validateTransactions(vector<transactionClass> &transactions, blockClass blo
         if (transactionIsValid && transactionInfoUnchanged)
         {
             int amount = block.transactions[i].amount;
-            users[senderIndex].balance -= amount;
-            users[receiverIndex].balance += amount;
+            int sender_balance = users[senderIndex].getBalance();
+            int receiver_balance = users[receiverIndex].getBalance();
+            users[senderIndex].setBalance(sender_balance - amount);
+            users[receiverIndex].setBalance(sender_balance + amount);
         }
 
         remove_transaction_from_transactions(transactions, block.transactions[i]);

@@ -9,6 +9,13 @@ include_directories(includes)
 add_executable(main
     includes/functions.cpp
     includes/functions.hpp
+    includes/includes.hpp
+    includes/classes/block_class.cpp
+    includes/classes/block_class.hpp
+    includes/classes/transaction_class.cpp
+    includes/classes/transaction_class.hpp
+    includes/classes/user_class.cpp
+    includes/classes/user_class.hpp
     main.cpp)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
