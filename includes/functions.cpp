@@ -1,115 +1,5 @@
 #include "functions.hpp"
-
-void initialiseHash(int *hashed)
-{
-
-    string hash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"; //Has to be 64 symbols
-
-    if (hash.length() != 64)
-    {
-        cout << "Error: primary hash size is not 64" << endl;
-        exit(0);
-    }
-
-    for (int i = 0; i < 64; i++)
-    {
-        hashed[i] = 0;
-        if (isdigit(hash[i]))
-            hashed[i] = (int)hash[i] - 48;
-        else
-            hashed[i] = (int)hash[i] - 87;
-        //cout << hashed[i] << " ";
-    }
-}
-
-string hashToString(int hashed[])
-{
-    string hash = "";
-
-    //Converting numbers into characters and adding to 'hash' string
-    for (int i = 0; i < 64; i++)
-    {
-        if (hashed[i] < 10)
-            hash += to_string(hashed[i]);
-        else
-            hash += hashed[i] + 87;
-    }
-    return hash;
-}
-
-string hashString(string inputStr)
-{
-    int hashed[64];
-    initialiseHash(hashed);
-
-    if (inputStr == "")
-        return "86ce601b0fa462069209e0b382631dcff298ca0e1f3ac1b45f162649c952fa57"; // Empty hash
-
-    vector<int> allIntSums;
-    int fullSum = 0;
-
-    // Fixing same hashes when all symbols are the same, or when there is only single symbol
-    bool allSymbolsSame = true;
-    for (int i = 0; i < inputStr.length() - 1; i++)
-    {
-        if (inputStr[i] != inputStr[i + 1])
-        {
-            allSymbolsSame = false;
-            break;
-        }
-    }
-    if (allSymbolsSame == true || inputStr.length() == 1)
-        inputStr += "[2a.re]'/fdfe.w[ro[]o23v,pw/]ad" + inputStr[0];
-
-    // Filling vector with calculated numbers and counting sum
-    for (int i = 0; i < inputStr.length(); i++)
-    {
-        //Convert letter to int using ascii
-        int number = (int)inputStr[i];
-
-        allIntSums.push_back(number);
-        fullSum += number;
-    }
-
-    if (inputStr.length() < 64)
-    {
-        for (int i = 0; i < 64;)
-        {
-            for (int inputStrIndex = 0; inputStrIndex < allIntSums.size(); inputStrIndex++)
-            {
-                if (i + inputStrIndex <= 64)
-                {
-                    hashed[i] += fullSum + allIntSums[inputStrIndex];
-                    hashed[i] = hashed[i] % 16;
-                    if (hashed[i] < 0)
-                        hashed[i] = -hashed[i];
-                    i++;
-                }
-                else
-                    break;
-            }
-        }
-    }
-    else
-    {
-        int hashedIndex = 0;
-        for (int i = 0; i < allIntSums.size(); i++)
-        {
-            if (i % 64 == 0 && i != 0)
-            {
-                hashedIndex = 0;
-                fullSum = 0;
-            }
-            hashed[hashedIndex] += fullSum + allIntSums[i];
-            hashed[hashedIndex] = hashed[hashedIndex] % 16;
-            if (hashed[hashedIndex] < 0)
-                hashed[hashedIndex] = -hashed[hashedIndex];
-            hashedIndex++;
-        }
-    }
-
-    return hashToString(hashed);
-}
+#include "hash.hpp"
 
 std::random_device device;
 int generateRandomNumber(int min, int max)
@@ -173,19 +63,6 @@ int find_user_index_by_key(string publicKey, vector<userClass> users)
     return -1;
 }
 
-// void putTransactionsToBlock(vector<transactionClass> transactions, blockClass &block)
-// {
-//     for (int i = 0; i < block.getMaxTransactionNumber(); i++)
-//     {
-//         if (i == transactions.size())
-//             break;
-
-//         //int transactionID = generateRandomNumber(0, transactions.size() - 1);
-
-//         block.addTransaction(transactions[i]);
-//     }
-// }
-
 void remove_transaction_from_transactions(vector<transactionClass> &transactions, transactionClass blockTransaction)
 {
     transactions.erase(
@@ -193,30 +70,6 @@ void remove_transaction_from_transactions(vector<transactionClass> &transactions
                   { return transaction.getTransactionIdHash() == blockTransaction.getTransactionIdHash(); }),
         transactions.end());
 }
-
-// void validateTransactions(vector<transactionClass> &transactions, blockClass block, vector<userClass> &users)
-// {
-//     for (int i = 0; i < block.transactions.size(); i++)
-//     {
-//         int senderIndex = find_user_index_by_key(block.transactions[i].getSenderPublicKey(), users);
-//         int receiverIndex = find_user_index_by_key(block.transactions[i].getReceiverPublicKey(), users);
-//         bool transactionIsValid = (senderIndex != -1 && receiverIndex != -1 && block.transactions[i].getAmount() <= users[senderIndex].getBalance() && block.transactions[i].getAmount() >= 0) ? true : false;
-
-//         string transactionInfo = block.transactions[i].getSenderPublicKey() + block.transactions[i].getReceiverPublicKey() + to_string(block.transactions[i].getAmount());
-//         bool transactionInfoUnchanged = (block.transactions[i].getTransactionIdHash() == hashString(transactionInfo)) ? true : false;
-
-//         if (transactionIsValid && transactionInfoUnchanged)
-//         {
-//             int amount = block.transactions[i].getAmount();
-//             int sender_balance = users[senderIndex].getBalance();
-//             int receiver_balance = users[receiverIndex].getBalance();
-//             users[senderIndex].setBalance(sender_balance - amount);
-//             users[receiverIndex].setBalance(sender_balance + amount);
-//         }
-
-//         remove_transaction_from_transactions(transactions, block.transactions[i]);
-//     }
-// }
 
 void validateTransactions(vector<transactionClass> &transactions, blockClass block, vector<userClass> &users)
 {
@@ -241,7 +94,6 @@ void validateTransactions(vector<transactionClass> &transactions, blockClass blo
         remove_transaction_from_transactions(transactions, block.getTransactions()[i]);
     }
 }
-
 
 string getMerkleRoot(vector<transactionClass> transactions)
 {
@@ -274,8 +126,10 @@ string getMerkleRoot(vector<transactionClass> transactions)
 blockClass generateBlock(vector<transactionClass> &transactions)
 {
     vector<transactionClass> transactionsVector;
-    for(int i=0; i<100; i++){
-        if(transactions.size() < 0) break;
+    for (int i = 0; i < 100; i++)
+    {
+        if (transactions.size() < 0)
+            break;
 
         transactionsVector.push_back(transactions[i]);
     }
@@ -292,7 +146,6 @@ void update_and_add_to_blockchain(blockClass &block, blockchainClass &blockchain
         prev_block_hash = "none";
     else
         prev_block_hash = blockchain.getBlocks().back().getMerkleRootHash();
-
 
     block.updateBlock(nonce, time(0), difficulty, prev_block_hash);
 

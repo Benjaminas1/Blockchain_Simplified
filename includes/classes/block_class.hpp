@@ -19,13 +19,16 @@ private:
 
 public:
     blockClass(vector<transactionClass> transactions, string merkleRootHash, string version); // constructor
+
     // setters
     void addTransaction(transactionClass transaction);
     void updateBlock(int nonce, time_t timestamp, int difficulty, string prevBlockHash);
+
     // getters
     vector<transactionClass> getTransactions();
     int getMaxTransactionNumber();
     string getMerkleRootHash();
+
     // print
     void printBlockInfo(int index);
 };

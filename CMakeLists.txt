@@ -9,7 +9,10 @@ include_directories(includes)
 add_executable(main
     includes/functions.cpp
     includes/functions.hpp
+    includes/hash.cpp
+    includes/hash.hpp
     includes/includes.hpp
+
     includes/classes/block_class.cpp
     includes/classes/block_class.hpp
     includes/classes/blockchain_class.cpp

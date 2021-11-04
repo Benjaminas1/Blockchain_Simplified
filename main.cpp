@@ -3,7 +3,7 @@
 using namespace std;
 
 int main()
-{   
+{
     int difficultyTarget = 3;
     vector<userClass> users = generateUsers(500);
     vector<transactionClass> transactions = generateTransactions(1000, users);
