@@ -173,18 +173,18 @@ int find_user_index_by_key(string publicKey, vector<userClass> users)
     return -1;
 }
 
-void putTransactionsToBlock(vector<transactionClass> transactions, blockClass &block)
-{
-    for (int i = 0; i < block.max_transaction_number; i++)
-    {
-        if (i == transactions.size())
-            break;
+// void putTransactionsToBlock(vector<transactionClass> transactions, blockClass &block)
+// {
+//     for (int i = 0; i < block.getMaxTransactionNumber(); i++)
+//     {
+//         if (i == transactions.size())
+//             break;
 
-        //int transactionID = generateRandomNumber(0, transactions.size() - 1);
+//         //int transactionID = generateRandomNumber(0, transactions.size() - 1);
 
-        block.transactions.push_back(transactions[i]);
-    }
-}
+//         block.addTransaction(transactions[i]);
+//     }
+// }
 
 void remove_transaction_from_transactions(vector<transactionClass> &transactions, transactionClass blockTransaction)
 {
@@ -194,29 +194,54 @@ void remove_transaction_from_transactions(vector<transactionClass> &transactions
         transactions.end());
 }
 
+// void validateTransactions(vector<transactionClass> &transactions, blockClass block, vector<userClass> &users)
+// {
+//     for (int i = 0; i < block.transactions.size(); i++)
+//     {
+//         int senderIndex = find_user_index_by_key(block.transactions[i].getSenderPublicKey(), users);
+//         int receiverIndex = find_user_index_by_key(block.transactions[i].getReceiverPublicKey(), users);
+//         bool transactionIsValid = (senderIndex != -1 && receiverIndex != -1 && block.transactions[i].getAmount() <= users[senderIndex].getBalance() && block.transactions[i].getAmount() >= 0) ? true : false;
+
+//         string transactionInfo = block.transactions[i].getSenderPublicKey() + block.transactions[i].getReceiverPublicKey() + to_string(block.transactions[i].getAmount());
+//         bool transactionInfoUnchanged = (block.transactions[i].getTransactionIdHash() == hashString(transactionInfo)) ? true : false;
+
+//         if (transactionIsValid && transactionInfoUnchanged)
+//         {
+//             int amount = block.transactions[i].getAmount();
+//             int sender_balance = users[senderIndex].getBalance();
+//             int receiver_balance = users[receiverIndex].getBalance();
+//             users[senderIndex].setBalance(sender_balance - amount);
+//             users[receiverIndex].setBalance(sender_balance + amount);
+//         }
+
+//         remove_transaction_from_transactions(transactions, block.transactions[i]);
+//     }
+// }
+
 void validateTransactions(vector<transactionClass> &transactions, blockClass block, vector<userClass> &users)
 {
-    for (int i = 0; i < block.transactions.size(); i++)
+    for (int i = 0; i < block.getTransactions().size(); i++)
     {
-        int senderIndex = find_user_index_by_key(block.transactions[i].getSenderPublicKey(), users);
-        int receiverIndex = find_user_index_by_key(block.transactions[i].getReceiverPublicKey(), users);
-        bool transactionIsValid = (senderIndex != -1 && receiverIndex != -1 && block.transactions[i].getAmount() <= users[senderIndex].getBalance() && block.transactions[i].getAmount() >= 0) ? true : false;
+        int senderIndex = find_user_index_by_key(block.getTransactions()[i].getSenderPublicKey(), users);
+        int receiverIndex = find_user_index_by_key(block.getTransactions()[i].getReceiverPublicKey(), users);
+        bool transactionIsValid = (senderIndex != -1 && receiverIndex != -1 && block.getTransactions()[i].getAmount() <= users[senderIndex].getBalance() && block.getTransactions()[i].getAmount() >= 0) ? true : false;
 
-        string transactionInfo = block.transactions[i].getSenderPublicKey() + block.transactions[i].getReceiverPublicKey() + to_string(block.transactions[i].getAmount());
-        bool transactionInfoUnchanged = (block.transactions[i].getTransactionIdHash() == hashString(transactionInfo)) ? true : false;
+        string transactionInfo = block.getTransactions()[i].getSenderPublicKey() + block.getTransactions()[i].getReceiverPublicKey() + to_string(block.getTransactions()[i].getAmount());
+        bool transactionInfoUnchanged = (block.getTransactions()[i].getTransactionIdHash() == hashString(transactionInfo)) ? true : false;
 
         if (transactionIsValid && transactionInfoUnchanged)
         {
-            int amount = block.transactions[i].getAmount();
+            int amount = block.getTransactions()[i].getAmount();
             int sender_balance = users[senderIndex].getBalance();
             int receiver_balance = users[receiverIndex].getBalance();
             users[senderIndex].setBalance(sender_balance - amount);
             users[receiverIndex].setBalance(sender_balance + amount);
         }
 
-        remove_transaction_from_transactions(transactions, block.transactions[i]);
+        remove_transaction_from_transactions(transactions, block.getTransactions()[i]);
     }
 }
+
 
 string getMerkleRoot(vector<transactionClass> transactions)
 {
@@ -248,28 +273,30 @@ string getMerkleRoot(vector<transactionClass> transactions)
 
 blockClass generateBlock(vector<transactionClass> &transactions)
 {
-    blockClass block;
-    block.version = "v0.1";
-    putTransactionsToBlock(transactions, block);
-    block.merkle_root_hash = getMerkleRoot(block.transactions);
+    vector<transactionClass> transactionsVector;
+    for(int i=0; i<100; i++){
+        if(transactions.size() < 0) break;
+
+        transactionsVector.push_back(transactions[i]);
+    }
+    blockClass block(transactionsVector, "v0.1", getMerkleRoot(transactions));
 
     return block;
 }
 
 void update_and_add_to_blockchain(blockClass &block, blockchainClass &blockchain, unsigned int nonce, int difficulty)
 {
-    block.nonce = nonce;
-    block.timestamp = time(0);
-    block.version = "v0.1";
-    block.merkle_root_hash = getMerkleRoot(block.transactions);
-    block.difficulty_target = difficulty;
+    string prev_block_hash;
 
-    if (blockchain.blocks.size() == 0)
-        block.prev_block_hash = "none";
+    if (blockchain.getBlocks().size() == 0)
+        prev_block_hash = "none";
     else
-        block.prev_block_hash = blockchain.blocks.back().merkle_root_hash;
+        prev_block_hash = blockchain.getBlocks().back().getMerkleRootHash();
 
-    blockchain.blocks.push_back(block);
+
+    block.updateBlock(nonce, time(0), difficulty, prev_block_hash);
+
+    blockchain.addBlock(block);
 }
 
 void block_mining(vector<transactionClass> &transactions, blockchainClass &blockchain, vector<userClass> &users, int difficultyTarget)
