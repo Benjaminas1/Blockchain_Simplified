@@ -1,9 +1,9 @@
 #include "user_class.hpp"
 
 userClass::userClass(string name, string public_key, int balance){
-    name = this->name;
-    public_key = this->public_key;
-    balance = this->balance;
+    this->name = name;
+    this->public_key = public_key;
+    this->balance = balance;
 }
 
 string userClass::getName()

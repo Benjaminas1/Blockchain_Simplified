@@ -145,15 +145,16 @@ vector<transactionClass> generateTransactions(int quantity, vector<userClass> us
 
     for (int i = 0; i < quantity; i++)
     {
-        transactionClass newTransaction;
 
         int sender_id = generateRandomNumber(0, user.size() - 1);
-        newTransaction.sender_public_key = user[sender_id].getPublicKey();
-        newTransaction.receiver_public_key = user[generateRandomNumber(0, user.size() - 1)].getPublicKey();
-        newTransaction.amount = generateRandomNumber(1000, 100000);
-        string transactionInfo = newTransaction.sender_public_key + newTransaction.receiver_public_key + to_string(newTransaction.amount);
-        newTransaction.transaction_ID_hash = hashString(transactionInfo);
+        int receiver_id = generateRandomNumber(0, user.size() - 1);
 
+        string sender_public_key = user[sender_id].getPublicKey();
+        string receiver_public_key = user[receiver_id].getPublicKey();
+        int amount = generateRandomNumber(1000, 100000);
+        string transaction_ID_hash = hashString(sender_public_key + receiver_public_key + to_string(amount));
+
+        transactionClass newTransaction(transaction_ID_hash, sender_public_key, receiver_public_key, amount);
         transactions.push_back(newTransaction);
     }
 
@@ -188,8 +189,8 @@ void putTransactionsToBlock(vector<transactionClass> transactions, blockClass &b
 void remove_transaction_from_transactions(vector<transactionClass> &transactions, transactionClass blockTransaction)
 {
     transactions.erase(
-        remove_if(transactions.begin(), transactions.end(), [&](transactionClass const &transaction)
-                  { return transaction.transaction_ID_hash == blockTransaction.transaction_ID_hash; }),
+        remove_if(transactions.begin(), transactions.end(), [&](transactionClass &transaction)
+                  { return transaction.getTransactionIdHash() == blockTransaction.getTransactionIdHash(); }),
         transactions.end());
 }
 
@@ -197,16 +198,16 @@ void validateTransactions(vector<transactionClass> &transactions, blockClass blo
 {
     for (int i = 0; i < block.transactions.size(); i++)
     {
-        int senderIndex = find_user_index_by_key(block.transactions[i].sender_public_key, users);
-        int receiverIndex = find_user_index_by_key(block.transactions[i].receiver_public_key, users);
-        bool transactionIsValid = (senderIndex != -1 && receiverIndex != -1 && block.transactions[i].amount <= users[senderIndex].getBalance() && block.transactions[i].amount >= 0) ? true : false;
+        int senderIndex = find_user_index_by_key(block.transactions[i].getSenderPublicKey(), users);
+        int receiverIndex = find_user_index_by_key(block.transactions[i].getReceiverPublicKey(), users);
+        bool transactionIsValid = (senderIndex != -1 && receiverIndex != -1 && block.transactions[i].getAmount() <= users[senderIndex].getBalance() && block.transactions[i].getAmount() >= 0) ? true : false;
 
-        string transactionInfo = block.transactions[i].sender_public_key + block.transactions[i].receiver_public_key + to_string(block.transactions[i].amount);
-        bool transactionInfoUnchanged = (block.transactions[i].transaction_ID_hash == hashString(transactionInfo)) ? true : false;
+        string transactionInfo = block.transactions[i].getSenderPublicKey() + block.transactions[i].getReceiverPublicKey() + to_string(block.transactions[i].getAmount());
+        bool transactionInfoUnchanged = (block.transactions[i].getTransactionIdHash() == hashString(transactionInfo)) ? true : false;
 
         if (transactionIsValid && transactionInfoUnchanged)
         {
-            int amount = block.transactions[i].amount;
+            int amount = block.transactions[i].getAmount();
             int sender_balance = users[senderIndex].getBalance();
             int receiver_balance = users[receiverIndex].getBalance();
             users[senderIndex].setBalance(sender_balance - amount);
@@ -223,7 +224,7 @@ string getMerkleRoot(vector<transactionClass> transactions)
 
     for (auto transaction : transactions)
     {
-        currentLayer.push_back(transaction.transaction_ID_hash);
+        currentLayer.push_back(transaction.getTransactionIdHash());
     }
 
     while (currentLayer.size() > 1)
