@@ -59,22 +59,3 @@ void blockClass::printBlockInfo(int index)
     out << setw(30) << "Nonce: " << nonce << endl;
     out << setw(30) << "Version: " << version << endl;
 }
-
-// -- blockchain --
-void blockchainClass::addBlock(blockClass block)
-{
-    blocks.push_back(block);
-}
-
-vector<blockClass> blockchainClass::getBlocks()
-{
-    return blocks;
-}
-
-void blockchainClass::printBlockchain()
-{
-    for (int i = 0; i < blocks.size(); i++)
-    {
-        blocks[i].printBlockInfo(i);
-    }
-}

@@ -12,6 +12,8 @@ add_executable(main
     includes/includes.hpp
     includes/classes/block_class.cpp
     includes/classes/block_class.hpp
+    includes/classes/blockchain_class.cpp
+    includes/classes/blockchain_class.hpp
     includes/classes/transaction_class.cpp
     includes/classes/transaction_class.hpp
     includes/classes/user_class.cpp

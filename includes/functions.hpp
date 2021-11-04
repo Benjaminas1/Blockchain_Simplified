@@ -4,6 +4,7 @@
 #include "classes/user_class.hpp"
 #include "classes/transaction_class.hpp"
 #include "classes/block_class.hpp"
+#include "classes/blockchain_class.hpp"
 
 vector<userClass> generateUsers(int quantity);
 

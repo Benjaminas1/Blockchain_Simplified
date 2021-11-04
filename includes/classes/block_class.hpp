@@ -29,15 +29,3 @@ public:
     // print
     void printBlockInfo(int index);
 };
-
-
-class blockchainClass
-{
-private:
-    vector<blockClass> blocks;
-
-public:
-    void addBlock(blockClass block);
-    vector<blockClass> getBlocks();
-    void printBlockchain();
-};
