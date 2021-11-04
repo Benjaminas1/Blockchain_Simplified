@@ -26,11 +26,8 @@ public:
     vector<transactionClass> getTransactions();
     int getMaxTransactionNumber();
     string getMerkleRootHash();
-
-    time_t getTimeStamp() { return timestamp; };
-    int getDifficulty() { return difficulty_target; };
-    int getNonce() { return nonce; };
-    string getVersion() { return version; };
+    // print
+    void printBlockInfo(int index);
 };
 
 
@@ -42,4 +39,5 @@ private:
 public:
     void addBlock(blockClass block);
     vector<blockClass> getBlocks();
+    void printBlockchain();
 };

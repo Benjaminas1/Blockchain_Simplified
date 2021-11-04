@@ -38,6 +38,28 @@ vector<transactionClass> blockClass::getTransactions()
     return transactions;
 }
 
+void blockClass::printBlockInfo(int index)
+{
+    ofstream out;
+    if (index == 0)
+    {
+        out.open("../output/blockchainResult.txt");
+        out.close();
+    }
+    out.open("../output/blockchainResult.txt", ios::app);
+
+    char buff[20];
+    strftime(buff, 20, "%Y-%m-%d %H:%M:%S", localtime(&timestamp));
+    out << "-----------------------------------------------" << endl;
+    out << "Block " << index << " info:" << endl;
+    out << setw(30) << "Timestamp: " << buff << endl;
+    out << setw(30) << "Number of transactions: " << transactions.size() << endl;
+    out << setw(30) << "Difficulty: " << difficulty_target << endl;
+    out << setw(30) << "Merkle root: " << merkle_root_hash << endl;
+    out << setw(30) << "Nonce: " << nonce << endl;
+    out << setw(30) << "Version: " << version << endl;
+}
+
 // -- blockchain --
 void blockchainClass::addBlock(blockClass block)
 {
@@ -49,3 +71,10 @@ vector<blockClass> blockchainClass::getBlocks()
     return blocks;
 }
 
+void blockchainClass::printBlockchain()
+{
+    for (int i = 0; i < blocks.size(); i++)
+    {
+        blocks[i].printBlockInfo(i);
+    }
+}
