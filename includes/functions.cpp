@@ -149,7 +149,7 @@ vector<transactionClass> generateTransactions(int quantity, vector<userClass> us
         int sender_id = generateRandomNumber(0, user.size() - 1);
         newTransaction.sender_public_key = user[sender_id].public_key;
         newTransaction.receiver_public_key = user[generateRandomNumber(0, user.size() - 1)].public_key;
-        newTransaction.amount = generateRandomNumber(100000, 1000000);
+        newTransaction.amount = generateRandomNumber(1000, 100000);
         string transactionInfo = newTransaction.sender_public_key + newTransaction.receiver_public_key + to_string(newTransaction.amount);
         newTransaction.transaction_ID_hash = hashString(transactionInfo);
 
@@ -206,11 +206,8 @@ void validateTransactions(vector<transactionClass> &transactions, blockClass blo
         if (transactionIsValid && transactionInfoUnchanged)
         {
             int amount = block.transactions[i].amount;
-            cout << "before amount = " << amount << " , sender = " << users[senderIndex].balance << " , receiver = " << users[receiverIndex].balance << endl;
             users[senderIndex].balance -= amount;
             users[receiverIndex].balance += amount;
-            cout << "after amount = " << amount << " , sender = " << users[senderIndex].balance << " , receiver = " << users[receiverIndex].balance << endl;
-            break;
         }
 
         remove_transaction_from_transactions(transactions, block.transactions[i]);

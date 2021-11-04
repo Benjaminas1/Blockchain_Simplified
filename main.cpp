@@ -32,7 +32,7 @@ int main(){
         cout << "Mining block: " << blockchain.blocks.size() << endl;
 
         block_mining(transactions, blockchain, users, difficultyTarget);
-        cout << "---------------------------" << endl;
+        cout << "Liko transactionu: " << transactions.size();
     }
 
     printBlockchainInfo(blockchain);
