@@ -156,11 +156,13 @@ void block_mining(vector<transactionClass> &transactions, blockchainClass &block
 {
     int potentialBlocksCount = 5;
     vector<blockClass> potentialBlocks;
-    vector<int> randomBlockIndex = {0, 1, 2, 3, 4};
+    vector<int> randomBlockIndex;
 
     for (int i = 0; i < potentialBlocksCount; i++)
     {
+        if(transactions.size() - (i * 100) < 0) break;
         potentialBlocks.push_back(generateBlock(transactions));
+        randomBlockIndex.push_back(i);
     }
 
     while (true)

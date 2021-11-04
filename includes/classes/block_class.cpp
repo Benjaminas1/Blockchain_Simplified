@@ -62,6 +62,7 @@ void blockClass::printBlockInfo(int index)
 
     for (auto transaction : transactions)
     {
+        if(transaction.getSenderPublicKey() == "") break;
         out << transaction.getSenderPublicKey() << " -> " << transaction.getReceiverPublicKey() << "   amount: " << transaction.getAmount() << endl;
     }
 }
