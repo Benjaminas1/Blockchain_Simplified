@@ -43,10 +43,10 @@ void blockClass::printBlockInfo(int index)
     ofstream out;
     if (index == 0)
     {
-        out.open("../output/blockchainResult.txt");
+        out.open("../output/blocks_info.txt");
         out.close();
     }
-    out.open("../output/blockchainResult.txt", ios::app);
+    out.open("../output/blocks_info.txt", ios::app);
 
     char buff[20];
     strftime(buff, 20, "%Y-%m-%d %H:%M:%S", localtime(&timestamp));
@@ -57,5 +57,11 @@ void blockClass::printBlockInfo(int index)
     out << setw(30) << "Difficulty: " << difficulty_target << endl;
     out << setw(30) << "Merkle root: " << merkle_root_hash << endl;
     out << setw(30) << "Nonce: " << nonce << endl;
-    out << setw(30) << "Version: " << version << endl;
+    out << setw(30) << "Version: " << version << endl << endl;
+    out << "Block " << index << " transactions:" << endl;
+
+    for (auto transaction : transactions)
+    {
+        out << transaction.getSenderPublicKey() << " -> " << transaction.getReceiverPublicKey() << "   amount: " << transaction.getAmount() << endl;
+    }
 }

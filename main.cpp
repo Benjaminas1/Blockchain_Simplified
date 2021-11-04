@@ -19,4 +19,6 @@ int main()
     }
 
     blockchain.printBlockchain();
+
+    // print transactions
 }

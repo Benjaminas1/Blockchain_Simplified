@@ -133,7 +133,7 @@ blockClass generateBlock(vector<transactionClass> &transactions)
 
         transactionsVector.push_back(transactions[i]);
     }
-    blockClass block(transactionsVector, "v0.2", getMerkleRoot(transactions));
+    blockClass block(transactionsVector, getMerkleRoot(transactions), "v0.2");
 
     return block;
 }
